@@ -73,6 +73,23 @@ class class_MediaInfo {
             return inStr
         }
     } 
+    __SetInformFormat(InformFormat := "JSON"){
+        formats := Map()
+        ;JSON/TEXT/XML/CSV/HTML are probably the most useful formats
+        ;go to the following helper function for more obscure stuff
+        known := this.__knownFormats()
+        
+        for k,v in StrSplit(known,",")
+            formats[v] := 1
+
+        If !formats.Has(InformFormat)
+            InformFormat := "JSON"  ;fallback
+        
+        ;TODO - check and correct case if required
+        this.InformFormat := InformFormat  
+        ; this.__Option("Inform", this.InformFormat)
+        return InformFormat
+    }
     __knownFormats(){
         ;NOTE: the DLL is case sensitive. When in doubt, copy and paste.
         known := "JSON,TEXT,XML,CSV,HTML" ;probably the most useful formats
@@ -93,23 +110,7 @@ class class_MediaInfo {
         known .= ",Details"
         return known
     }
-    __SetInformFormat(InformFormat := "JSON"){
-        formats := Map()
-        ;JSON/TEXT/XML/CSV/HTML are probably the most useful formats
-        ;go to the following helper function for more obscure stuff
-        known := this.__knownFormats()
-        
-        for k,v in StrSplit(known,",")
-            formats[v] := 1
 
-        If !formats.Has(InformFormat)
-            InformFormat := "JSON"  ;fallback
-        
-        ;TODO - check and correct case if required
-        this.InformFormat := InformFormat  
-        ; this.__Option("Inform", this.InformFormat)
-        return InformFormat
-    }
 
 
     ;internal DLL functions
