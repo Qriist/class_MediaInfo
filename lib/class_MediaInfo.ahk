@@ -20,7 +20,7 @@ class class_MediaInfo {
 
         ;set some defaults
         this.ReturnJsonAsMap := ReturnJsonAsMap
-        this.SetInformFormat()
+        this.Option("Inform","JSON")
     }
     Info(file){ ;use this to get a one-line read on any given file
         this.Open(file)
@@ -39,26 +39,13 @@ class class_MediaInfo {
     Close(){
         return this.__Close()
     }
-    
-    SetInformFormat(InformFormat := "JSON"){
-        formats := Map()
-        ;JSON/TEXT/XML/CSV/HTML are probably the most useful formats
-        ;go to the following helper function for more obscure stuff
-        known := this.__knownFormats()
-        
-        for k,v in StrSplit(known,",")
-            formats[v] := 1
-
-        If !formats.Has(InformFormat)
-            InformFormat := "JSON"  ;fallback
-        
-        ;TODO - check and correct case if required
-        this.InformFormat := InformFormat  
-        this.__Option("Inform", this.InformFormat)
-        return InformFormat
+    Option(option,value := ""){
+        switch option { ;catch anything that needs special processing
+            case "Inform" :
+                option!="Inform"?"":value:=this.__SetInformFormat(value)
+        }
+        this.__Option(option,value)
     }
-
-
 
 
     ;class helper functions
@@ -85,7 +72,7 @@ class class_MediaInfo {
         } catch Error as err {
             return inStr
         }
-    }
+    } 
     __knownFormats(){
         ;NOTE: the DLL is case sensitive. When in doubt, copy and paste.
         known := "JSON,TEXT,XML,CSV,HTML" ;probably the most useful formats
@@ -106,6 +93,24 @@ class class_MediaInfo {
         known .= ",Details"
         return known
     }
+    __SetInformFormat(InformFormat := "JSON"){
+        formats := Map()
+        ;JSON/TEXT/XML/CSV/HTML are probably the most useful formats
+        ;go to the following helper function for more obscure stuff
+        known := this.__knownFormats()
+        
+        for k,v in StrSplit(known,",")
+            formats[v] := 1
+
+        If !formats.Has(InformFormat)
+            InformFormat := "JSON"  ;fallback
+        
+        ;TODO - check and correct case if required
+        this.InformFormat := InformFormat  
+        ; this.__Option("Inform", this.InformFormat)
+        return InformFormat
+    }
+
 
     ;internal DLL functions
     __Open(file){
