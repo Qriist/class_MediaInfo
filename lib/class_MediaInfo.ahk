@@ -74,14 +74,10 @@ class class_MediaInfo {
         }
     } 
     __SetInformFormat(InformFormat := "JSON"){
-        formats := Map()
         ;JSON/TEXT/XML/CSV/HTML are probably the most useful formats
         ;go to the following helper function for more obscure stuff
-        known := this.__knownFormats()
+        formats := this.__knownFormats()
         
-        for k,v in StrSplit(known,",")
-            formats[v] := 1
-
         If !formats.Has(InformFormat)
             InformFormat := "JSON"  ;fallback
         
@@ -91,6 +87,9 @@ class class_MediaInfo {
         return InformFormat
     }
     __knownFormats(){
+        static formats := Map()
+        If (Formats.Count > 0)
+            return formats
         ;NOTE: the DLL is case sensitive. When in doubt, copy and paste.
         known := "JSON,TEXT,XML,CSV,HTML" ;probably the most useful formats
 
@@ -108,7 +107,10 @@ class class_MediaInfo {
         known .= ",OLDXML,MAXML,MIXML"
         ; known .= "JSON_URL,Conformance_JSON"  ;seems depreciated/nonfunctional
         known .= ",Details"
-        return known
+
+        for k,v in StrSplit(known,",")
+            formats[v] := 1
+        return formats
     }
 
 
