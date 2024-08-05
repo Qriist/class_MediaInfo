@@ -1,6 +1,6 @@
 ﻿#Include <cJSON>    ;https://github.com/G33kDude/cJson.ahk  ;shout out to G33k for his amazing coding wizardry
 class class_MediaInfo {
-    __New(dll_location?,ReturnJsonAsMap := 1) {
+    __New(dll_location?) {
         dll_location := this.__dll_locator(dll_location?) ;do some light sanity checks on the DLL.
         
         ;get dll handle
@@ -19,12 +19,11 @@ class class_MediaInfo {
         this.handle := DllCall(this.MediaInfo_New, "Ptr")
 
         ;set some defaults
-        this.ReturnJsonAsMap := ReturnJsonAsMap
         this.Option("Inform","JSON")
     }
-    Info(file){ ;use this to get a one-line read on any given file
+    Info(file,returnReportRaw?){ ;use this to get a one-line read on any given file
         this.Open(file)
-        ret := this.Inform()
+        ret := this.Inform(returnReportRaw?)
         this.Close()
         return ret
     }
@@ -32,9 +31,10 @@ class class_MediaInfo {
     Open(file){
         return this.__Open(file)
     }
-    Inform(){
-        ret := this.__Inform()
-        return this.ReturnJsonAsMap=1?this.__TryJson(&ret):ret
+    Inform(returnReportRaw?){
+        ret := this.ReportRaw := this.__Inform()
+        this.ReportMap := this.__TryJson(&ret)
+        return !IsSet(returnReportRaw)?this.ReportMap:this.ReportRaw
     }
     Close(){
         return this.__Close()
